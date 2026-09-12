@@ -1,0 +1,6 @@
+com\organizer\App$StaticFileHandler.class
+com\organizer\core\FileNode.class
+com\organizer\core\ScannerService.class
+com\organizer\App.class
+com\organizer\App$ScanHandler.class
+com\organizer\core\ScannerService$1.class

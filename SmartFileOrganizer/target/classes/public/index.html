@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart File Organizer Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e2e; color: #cdd6f4; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; }
+        .card { background-color: #313244; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        button { background-color: #89b4fa; color: #11111b; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #74c7ec; }
+        pre { background: #11111b; padding: 15px; border-radius: 5px; overflow-x: auto; color: #a6e3a1; }
+        h1, h2 { color: #cba6f7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Smart File Organizer & Duplicate Detector</h1>
+        <p>Using advanced DSA (Trees, HashMaps, Priority Queues) to analyze your files.</p>
+        
+        <button id="scanBtn" onclick="runScan()">Scan Downloads Directory</button>
+        <p id="status"></p>
+
+        <div class="card" id="resultsCard" style="display: none;">
+            <h2>Storage Analytics (Grouped by Type)</h2>
+            <pre id="stats"></pre>
+            
+            <h2>Duplicate Files Detected (MD5/SHA256)</h2>
+            <pre id="duplicates"></pre>
+
+            <h2>Top Largest Files (Priority Queue Output)</h2>
+            <pre id="largest"></pre>
+        </div>
+    </div>
+
+    <script>
+        async function runScan() {
+            document.getElementById('status').innerText = "Scanning... This involves traversing File Trees and hashing files. Please wait.";
+            document.getElementById('resultsCard').style.display = "none";
+            
+            try {
+                let response = await fetch('/api/scan');
+                let data = await response.json();
+                
+                document.getElementById('stats').innerText = JSON.stringify(data.extensionStats, null, 2);
+                document.getElementById('duplicates').innerText = JSON.stringify(data.duplicates, null, 2);
+                document.getElementById('largest').innerText = JSON.stringify(data.topLargestFiles.map(f => `${f.name} - ${(f.size / 1024 / 1024).toFixed(2)} MB`), null, 2);
+                
+                document.getElementById('status').innerText = "Scan Complete!";
+                document.getElementById('resultsCard').style.display = "block";
+            } catch (e) {
+                document.getElementById('status').innerText = "Error during scan: " + e;
+            }
+        }
+    </script>
+</body>
+</html>
